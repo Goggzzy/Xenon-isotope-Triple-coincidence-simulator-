@@ -1,0 +1,536 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import random as random
+from mpl_toolkits.mplot3d import Axes3D
+
+
+
+# Nr. of atoms in sample at start of measurement
+Xe131m = 200
+Xe133m = 6000
+Xe133  = 2000
+Xe135  = 200000
+
+Xe131  = 0
+Cs133  = 0
+Cs135  = 0
+
+#Half life of Xenon isotopes in days
+Xe131m_hl = 11.84
+Xe133m_hl = 2.190
+Xe133_hl  = 5.243
+Xe135_hl  = 0.389
+
+
+#Probability of decay of Xenon isotopes during time interval h (days)
+h = 0.1
+
+P_Xe131m = 1 - np.e**(-h/Xe131m_hl)
+P_Xe133m = 1 - np.e**(-h/Xe133m_hl)
+P_Xe133  = 1 - np.e**(-h/Xe133_hl)
+P_Xe135  = 1 - np.e**(-h/Xe135_hl)
+
+
+
+# Lists with nr. of Xenon isotopes
+Xe131m_list = []
+Xe133m_list = []
+Xe133_list  = []
+Xe135_list  = []
+Xe131_list  = []
+Cs133_list  = []
+Cs135_list  = []
+
+#Xe131m possible decay particles
+Xe131m_CE53    = []
+Xe131m_Xray53  = []
+Xe131m_CE35    = []
+Xe131m_CE6     = []
+Xe131m_AE6     = []
+Xe131m_Gamma1  = []
+
+#Xe133m possible decay particles
+
+Xe133m_CE54    = []
+Xe133m_Xray54  = []
+Xe133m_CE26    = []
+Xe133m_Gamma10 = []
+Xe133m_CE7     = []
+Xe133m_AE7     = []
+
+#Xe133 possible decay particles
+
+Xe133_Beta48  = []
+Xe133_CE48    = []
+Xe133_Xray48  = []
+Xe133_Beta38  = []
+Xe133_Gamma38 = []
+Xe133_Beta10  = []
+Xe133_CE10    = []
+Xe133_Beta5   = []
+Xe133_CE5     = []
+Xe133_AE5     = []
+
+#Xe135 possible decay particles
+
+Xe135_Beta90  = []
+Xe135_Gamma90 = []
+Xe135_Beta4   = []
+Xe135_CE4     = []
+Xe135_Xray4   = []
+Xe135_Beta1   = []
+Xe135_CE1     = []
+Xe135_Beta0   = []
+Xe135_CE0     = []
+Xe135_AE0     = []
+
+
+
+# generating probability of Beta energy from BetaDecay.py
+
+Beta_spectrum_131 = []
+Beta_spectrum_133 = []
+Beta_spectrum_135 = []
+
+Energy = np.linspace(0,14000,5000)
+
+a = np.loadtxt('131XE.txt', float)
+b = np.loadtxt('133XE.txt', float)
+c = np.loadtxt('135XE.txt', float)
+
+
+for i in a:
+    Beta_spectrum_131.append(i)
+for i in b: 
+    Beta_spectrum_133.append(i)
+for i in c: 
+    Beta_spectrum_135.append(i)
+
+
+def Betaspectrum(x):
+    R = []
+    R.append(np.random.randint(0, 1500))
+    R_range = random.uniform(0.0, 0.0015)
+    
+    if R_range < x[R[0]]:
+        return Energy[R[0]]
+    else:
+        return Betaspectrum(x)
+
+
+#Functions defining energies and branching ratios for decay schemes of Xenon isotopes
+def fXe131m(n):
+    Xe131m_r = random.random()
+    if 0.0 < Xe131m_r < 0.5375:
+        x = 129.369 + np.random.normal()*20.0
+        y = 30.380 + np.random.normal()*1.0
+        Xe131m_CE53.append(x)
+        Xe131m_Xray53.append(y)
+        return x,y
+    if 0.5375 < Xe131m_r < 89.287:
+        x = 159.299 + np.random.normal()*20.0
+        Xe131m_CE35.append(x)
+        return x
+    if 89.287 < Xe131m_r < 96.187: 
+        x = 129.369 + np.random.normal()*20.0
+        y = 24.6 + np.random.normal()*1.0
+        Xe131m_CE6.append(x)
+        Xe131m_AE6.append(y)
+        return x,y
+    if 96.187 < Xe131m_r < 1.0:
+        x = 163.930 + np.random.normal()*10.0
+        Xe131m_Gamma1.append(x)
+        return x
+
+def fXe135(n):
+    Xe135_r = random.random()
+    if 0.0 < Xe135_r < 0.90:
+        x = Betaspectrum(Beta_spectrum_135)
+        y = 249.770 + np.random.normal()*10.0
+        Xe135_Beta90.append(x)
+        Xe135_Gamma90.append(y)
+        return x,y
+    if 0.90 < Xe135_r < 0.9495:
+        x = Betaspectrum(Beta_spectrum_135)
+        y = 214 + np.random.normal()*50.0
+        z = 31.606 + np.random.normal()*1.0
+        Xe135_Beta4.append(x)
+        Xe135_CE4.append(y)
+        Xe135_Xray4.append(z)
+        return x,y,z
+    if 0.9495 < Xe135_r < 0.9607:
+        x = Betaspectrum(Beta_spectrum_135)
+        y = 245.0 + np.random.normal()*50.0
+        Xe135_Beta1.append(x)
+        Xe135_CE1.append(y)
+        return x,y
+    if 0.9607 < Xe135_r < 1.0:
+        x = Betaspectrum(Beta_spectrum_135)
+        y = 214 + np.random.normal()*50.0
+        z = 25.5 + np.random.normal()*20.0
+        Xe135_Beta0.append(x)
+        Xe135_CE0.append(y)
+        Xe135_AE0.append(z)
+        return x,y,z
+
+def fXe133m(n):
+    Xe133m_r = random.random()
+    if 0.0 < Xe133m_r < 0.5485:
+        x = 198.66 + np.random.normal()*10.0
+        y = 30.385 + np.random.normal()*1.0
+        Xe133m_CE54.append(x)
+        Xe133m_Xray54.append(y) 
+        return x,y
+    if 0.5485 < Xe133m_r < 0.81617:
+        x = 228.735 + np.random.normal()*10.0
+        Xe133m_CE26.append(x)
+        return x
+    if  0.81617 < Xe133m_r < 0.92817:
+        x = 233.221 + np.random.normal()*10.0
+        Xe133m_Gamma10.append(x)
+        return x
+    if 0.99817 < Xe133m_r < 1.0:
+        x = 198.66 + np.random.normal()*10.0
+        y = 24.6 + np.random.normal()*1.0
+        Xe133m_CE7.append(x)
+        Xe133m_AE7.append(y)
+        return x,y
+
+def fXe133(n):
+    Xe133_r = random.random()
+    if 0.0 < Xe133_r < 0.488:
+        x = Betaspectrum(Beta_spectrum_133)
+        y = 45.013 + np.random.normal()*30.0
+        z = 31.606 + np.random.normal()*1.0
+        Xe133_Beta48.append(x)
+        Xe133_CE48.append(y)
+        Xe133_Xray48.append(z)
+        return x,y,z
+    if 0.488< Xe133_r <0.868:
+        x = Betaspectrum(Beta_spectrum_133)
+        y = 80.997 + np.random.normal()*1.0
+        Xe133_Beta38.append(x)
+        Xe133_Gamma38.append(y)
+        return x,y
+    if 0.868 < Xe133_r < 0.9721:
+        x = Betaspectrum(Beta_spectrum_133)
+        y = 76.2 + np.random.normal()*20.0
+        Xe133_Beta10.append(x)
+        Xe133_CE10.append(y)
+        return x,y
+    if 0.9721 < Xe133_r < 1.0:
+        x = Betaspectrum(Beta_spectrum_133)
+        y = 45.013 + np.random.normal()*20.0
+        z = 25.5 +   np.random.normal()*20.0
+        Xe133_Beta5.append(x)
+        Xe133_CE5.append(y)
+        Xe133_AE5.append(z)
+        return x,y,z
+    
+    
+    
+    
+
+
+#Main for-loop
+t = np.arange(0,0.25,h)
+
+for ti in t:
+    Xe131m_list.append(Xe131m)
+    Xe133m_list.append(Xe133m)
+    Xe133_list.append(Xe133)
+    Xe135_list.append(Xe135)
+    Xe131_list.append(Xe131)
+    Cs133_list.append(Cs133)
+    Cs135_list.append(Cs135)
+    
+    for i in range(Xe131m):
+        if random.random() < P_Xe131m:
+            Xe131m -= 1
+            Xe131  += 1
+            
+            count = fXe131m(i)
+                
+            
+        
+    for i in range(Xe135):
+        if random.random() < P_Xe135:
+            Xe135 -= 1
+            Cs135 += 1
+            
+            if random.random() < 0.96:
+                count = fXe135(i)
+                    
+    
+    for i in range(Xe133m):
+        if random.random() < P_Xe133m:
+            Xe133m -= 1
+            Xe133  += 1
+            
+            count = fXe133m(i)    
+    
+    for i in range(Xe133):
+        Xe133_r = random.random()
+        if random.random() < P_Xe133:
+            Xe133 -= 1
+            Cs133 += 1
+            
+            if random.random() < 0.99:
+                count = fXe133(i)
+                
+
+
+
+# Histograms of electron and photon detections (No Coincidence)
+
+'''
+
+Electron_list = []
+Photon_list   = []
+
+Electron_list.extend(Xe131m_CE53 + Xe131m_CE35 + Xe131m_CE6 + Xe131m_AE6 + Xe133m_CE54 +
+Xe133m_CE26 + Xe133m_CE7 + Xe133m_AE7
++ Xe133_Beta48 + Xe133_CE48 + Xe133_Beta38 + Xe133_Beta10 + Xe133_CE10 + Xe133_Beta5 + 
+Xe133_CE5 + Xe133_AE5 + Xe135_Beta90
++ Xe135_Beta4 + Xe135_CE4 + Xe135_Beta1 + Xe135_CE1 + Xe135_Beta0 + Xe135_CE0 + Xe135_AE0)
+
+Photon_list.extend(Xe131m_Xray53 + Xe131m_Gamma1 + Xe133m_Xray54 + Xe133m_Gamma10 + 
+Xe133_Xray48 + Xe133_Gamma38 
++ Xe135_Gamma90 + Xe135_Xray4)
+
+plt.hist(Electron_list, bins=100)
+plt.hist(Photon_list, bins=100)
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Counts (Nr)')
+plt.title('Histogram of total Photon and Electron Counts')
+
+'''
+
+#Error bar and mean plots for no coincidence measurements
+
+'''
+
+Electron_list_error = [Xe131m_CE53, Xe131m_CE35 ,Xe131m_CE6 ,Xe131m_AE6 ,Xe133m_CE54 ,
+Xe133m_CE26 ,Xe133m_CE7 ,Xe133m_AE7
+,Xe133_Beta48 ,Xe133_CE48 ,Xe133_Beta38 ,Xe133_Beta10 ,Xe133_CE10 ,Xe133_Beta5 ,Xe133_CE5 ,
+Xe133_AE5 ,Xe135_Beta90
+,Xe135_Beta4 ,Xe135_CE4 ,Xe135_Beta1 ,Xe135_CE1 ,Xe135_Beta0 ,Xe135_CE0 ,Xe135_AE0]
+
+Photon_list_error = [Xe131m_Xray53 ,Xe131m_Gamma1 ,Xe133m_Xray54 ,Xe133m_Gamma10 ,
+Xe133_Xray48 ,Xe133_Gamma38 
+,Xe135_Gamma90 ,Xe135_Xray4]
+
+Mean_electron = []
+Std_electron  = []
+
+Mean_photon   = []
+Std_photon    = []
+
+
+x_axis1 = np.linspace(0, 24, 24)
+x_axis2 = np.linspace(0, 8, 8)
+
+
+
+for i in Electron_list_error:
+    mean = np.mean(i)
+    std  = np.std(i)
+    Mean_electron.append(mean)
+    Std_electron.append(std)
+    
+for i in Photon_list_error:
+    mean = np.mean(i)
+    std  = np.std(i)
+    Mean_photon.append(mean)
+    Std_photon.append(std)
+
+
+plt.errorbar(Mean_electron, x_axis1, None, Std_electron, fmt = '.k' )
+plt.errorbar(Mean_photon, x_axis2, None, Std_photon, fmt = '.k')
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Decay Branch Trajectory')
+plt.title('Means and Standard deviations of Measured Particle Types')
+
+'''
+
+# Single electrons of respective Xenon isotopes
+
+'''
+
+Electron_list_131mXE = []
+
+Electron_list_131mXE.extend(Electron_list_131mXE + Xe131m_CE53 + Xe131m_CE35 + Xe131m_CE6 + 
+Xe131m_AE6)
+
+plt.hist(Electron_list_131mXE, bins=100)
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Counts (Nr)')
+plt.title('Histogram of all 131mXe Electron Counts')
+
+'''
+
+'''
+
+Electron_list_133mXE = []
+
+Electron_list_133mXE.extend(Electron_list_133mXE + Xe133m_CE54 + Xe133m_CE26 + Xe133m_CE7 + 
+Xe133m_AE7)
+
+plt.hist(Electron_list_133mXE, bins=100)
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Counts (Nr)')
+plt.title('Histogram of all 133mXe Electron Counts')
+
+'''
+
+
+'''
+
+Electron_list_133XE = []
+
+Electron_list_133XE.extend(Electron_list_133XE + Xe133_Beta48 + Xe133_CE48 
++ Xe133_Beta38 + Xe133_Beta10 + Xe133_CE10 + Xe133_Beta5 + Xe133_CE5 + Xe133_AE5)
+
+plt.hist(Electron_list_133XE, bins=100)
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Counts (Nr)')
+plt.title('Histogram of all 133Xe Electron Counts')
+
+'''
+'''
+
+Electron_list_135XE = []
+
+Electron_list_135XE.extend(Electron_list_135XE + Xe135_Beta90
++ Xe135_Beta4 + Xe135_CE4 + Xe135_Beta1 + Xe135_CE1 + Xe135_Beta0 + Xe135_CE0 + Xe135_AE0)
+
+plt.hist(Electron_list_135XE, bins=100)
+
+plt.xlabel('Energy (keV)')
+plt.ylabel('Counts (Nr)')
+plt.title('Histogram of all 135Xe Electron Counts')
+
+'''
+
+# Electron-photon double coincidence scatter plot
+
+'''
+
+plt.scatter(Xe131m_CE53, Xe131m_Xray53, s=1.0, c='r')
+plt.scatter(Xe135_Beta90, Xe135_Gamma90, s=1.0, c='b')
+plt.scatter(Xe135_Beta4, Xe135_Xray4, s=1.0, c='g')
+plt.scatter(Xe133m_CE54, Xe133m_Xray54, s=1.0, c='y')
+plt.scatter(Xe133_Beta48, Xe133_Xray48, s=1.0, c='purple')
+plt.scatter(Xe133_Beta38, Xe133_Gamma38, s=1.0, c='pink')
+
+plt.errorbar(np.mean(Xe131m_CE53), np.mean(Xe131m_Xray53), np.std(Xe131m_Xray53),
+np.std(Xe131m_CE53), fmt = '.k')
+plt.errorbar(np.mean(Xe135_Beta90), np.mean(Xe135_Gamma90), np.std(Xe135_Gamma90),
+np.std(Xe135_Beta90), fmt = '.k')
+plt.errorbar(np.mean(Xe135_Beta4), np.mean(Xe135_Xray4), np.std(Xe135_Xray4),
+np.std(Xe135_Beta4), fmt = '.k')
+plt.errorbar(np.mean(Xe133m_CE54), np.mean(Xe133m_Xray54), np.std(Xe133m_Xray54),
+np.std(Xe133m_CE54), fmt = '.k')
+plt.errorbar(np.mean(Xe133_Beta48), np.mean(Xe133_Xray48), np.std(Xe133_Xray48),
+np.std(Xe133_Beta48), fmt = '.k')
+plt.errorbar(np.mean(Xe133_Beta38), np.mean(Xe133_Gamma38), np.std(Xe133_Gamma38),
+np.std(Xe133_Beta38), fmt = '.k')
+
+print('Xe131m_CE53:  ' + 'Mean:  ' + str(np.mean(Xe131m_CE53)) + 
+'  STD:  ' + str(np.std(Xe131m_CE53)))
+print('Xe131m_Xray53:  ' + 'Mean:  ' + str(np.mean(Xe131m_Xray53)) + 
+'  STD:  ' + str(np.std(Xe131m_Xray53)))
+print('Xe135_Beta90:  ' + 'Mean:  ' + str(np.mean(Xe135_Beta90)) + 
+'  STD:  ' + str(np.std(Xe135_Beta90)))
+print('Xe135_Gamma90:  ' + 'Mean:  ' + str(np.mean(Xe135_Gamma90)) + 
+'  STD:  ' + str(np.std(Xe135_Gamma90)))
+print('Xe135_Beta4:  ' + 'Mean:  ' + str(np.mean(Xe135_Beta4)) + 
+'  STD:  ' + str(np.std(Xe135_Beta4)))
+print('Xe135_Xray4:  ' + 'Mean:  ' + str(np.mean(Xe135_Xray4)) + 
+'  STD:  ' + str(np.std(Xe135_Xray4)))
+print('Xe133m_CE54:  ' + 'Mean:  ' + str(np.mean(Xe133m_CE54)) + 
+'  STD:  ' + str(np.std(Xe133m_CE54)))
+print('Xe133m_Xray54:  ' + 'Mean:  ' + str(np.mean(Xe133m_Xray54)) + 
+'  STD:  ' + str(np.std(Xe133m_Xray54)))
+print('Xe133_Beta48:  ' + 'Mean:  ' + str(np.mean(Xe133_Beta48)) + 
+'  STD:  ' + str(np.std(Xe133_Beta48)))
+print('Xe133_Xray48:  ' + 'Mean:  ' + str(np.mean(Xe133_Xray48)) + 
+'  STD:  ' + str(np.std(Xe133_Xray48)))
+print('Xe133_Beta38:  ' + 'Mean:  ' + str(np.mean(Xe133_Beta38)) + 
+'  STD:  ' + str(np.std(Xe133_Beta38)))
+print('Xe133_Gamma38:  ' + 'Mean:  ' + str(np.mean(Xe133_Gamma38)) + 
+'  STD:  ' + str(np.std(Xe133_Gamma38)))
+
+plt.xlabel('Electron kinetic Energy (keV)')
+plt.ylabel('Photon Energy (keV)')
+plt.title('Xenon Isotope Electron-Photon Coincidences')
+
+'''
+#Beta-CE scatter plot (2D)
+
+'''
+
+
+plt.scatter(Xe135_Beta4, Xe135_CE4, s=1.0, c='g')
+plt.scatter(Xe133_Beta48, Xe133_CE48, s=1.0, c='purple')
+
+plt.errorbar(np.mean(Xe135_Beta4), np.mean(Xe135_CE4), 
+np.std(Xe135_CE4), np.std(Xe135_Beta4), fmt = '.k')
+plt.errorbar(np.mean(Xe133_Beta48), np.mean(Xe133_CE48),
+np.std(Xe133_CE48), np.std(Xe133_Beta48), fmt = '.k')
+
+print('Xe135_Beta4:  ' + 'Mean:  ' + str(np.mean(Xe135_Beta4)) + 
+'  STD:  ' + str(np.std(Xe135_Beta4)))
+print('Xe135_CE4:  ' + 'Mean:  ' + str(np.mean(Xe135_CE4)) + 
+'  STD:  ' + str(np.std(Xe135_CE4)))
+print('Xe133_Beta48:  ' + 'Mean:  ' + str(np.mean(Xe133_Beta48)) + 
+'  STD:  ' + str(np.std(Xe133_Beta48)))
+print('Xe133_CE48:  ' + 'Mean:  ' + str(np.mean(Xe133_CE48)) + 
+'  STD:  ' + str(np.std(Xe133_CE48)))
+
+plt.xlabel('Beta Electron Kinetic Energy (keV)')
+plt.ylabel('CE Kinetic Energy (keV)')
+plt.title('Xenon Isotope Beta-CE Coincidences')
+
+'''
+
+#Beta-CE-photon tripple coincidence scatter plots (3D)
+
+'''
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(Xe135_Beta4, Xe135_CE4, Xe135_Xray4, c='blue', s=1.0)
+ax.scatter(Xe133_Beta48, Xe133_CE48, Xe133_Xray48, c='green', s=1.0)
+
+
+
+'''
+
+
+
+#Plots of element concentrations
+
+'''
+
+plt.plot(t, Xe131m_list, 'red')
+plt.plot(t, Xe133m_list, 'orange')
+plt.plot(t, Xe133_list,  'yellow')
+plt.plot(t, Xe135_list,  'pink')
+
+plt.plot(t, Xe131_list, 'Green')
+plt.plot(t, Cs133_list, 'Blue')
+plt.plot(t, Cs135_list, 'purple')
+
+plt.xlabel('Time (days)')
+plt.ylabel('Number of Particles')
+plt.title('Number of Xenon Isotopes and Decay Products over Time')
+
+'''
+
+plt.show()
